@@ -1,0 +1,14 @@
+#include "resource.h"
+
+DATA "code" ID 1 "code0001.bin"
+
+FORM ID MainForm AT (0 0 160 160)
+BEGIN
+    TITLE "Hello World"
+    LABEL "Hello from Palm OS!" ID 1010 AT (30 52) FONT 1
+    BUTTON "Done" ID DoneButton AT (55 90 50 14)
+END
+
+APPLICATIONICONNAME ID AppName "Hello World"
+VERSION ID AppVersion "1.0.0"
+STRING ID AppVersion "1.0.0"

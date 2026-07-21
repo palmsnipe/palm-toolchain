@@ -1,0 +1,23 @@
+MEMORY
+{
+    main  : ORIGIN = 0x10000000, LENGTH = 65000
+    trash : ORIGIN = 0x40000000, LENGTH = 64K
+}
+
+SECTIONS
+{
+    .vec : { KEEP(*(.vectors)) *(.vectors) } > main
+    .text : {
+        *(.text .text.* .rodata .rodata.* .data.rel.ro .data.rel.ro.*)
+        *libgcc.a:*(.text .text.* .rodata .rodata.*)
+        . = ALIGN(4);
+        __reloc_offsets_start = ABSOLUTE(.);
+        KEEP(*(.reloc_offsets))
+        __reloc_offsets_end = ABSOLUTE(.);
+        . = ALIGN(4);
+    } > main
+    .trash : { *(.init) *(.init.*) *(.fini) *(.fini.*) *(*.macsbug) } > trash
+    /DISCARD/ : { *(.comment) *(.note*) *(.eh_frame*) *(.data .data.*) *(.bss*) *(COMMON) }
+}
+
+ENTRY(__Startup__)

@@ -39,4 +39,5 @@ printf '%s\n' 'int palm_toolchain_probe(void) { return 42; }' >"$tmp/probe.c"
 "$PREFIX/bin/pilrc" --version 2>&1 | head -1
 node --check "$TOOLCHAIN_ROOT/tools/generate-m68k-relocs.mjs"
 node --check "$TOOLCHAIN_ROOT/tools/validate-prc.mjs"
+"${MAKE:-make}" -C "$TOOLCHAIN_ROOT/examples/hello-world" test
 echo "Toolchain check passed."

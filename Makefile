@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: prerequisites fetch bootstrap check clean
+.PHONY: prerequisites fetch bootstrap check example example-clean clean
 
 prerequisites:
 	@scripts/prerequisites.sh
@@ -13,6 +13,12 @@ bootstrap: prerequisites
 
 check:
 	@scripts/check.sh
+
+example:
+	@$(MAKE) -C examples/hello-world
+
+example-clean:
+	@$(MAKE) -C examples/hello-world clean
 
 clean:
 	@echo "Generated state is contained in .toolchain/."

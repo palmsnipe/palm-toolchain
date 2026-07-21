@@ -30,7 +30,7 @@ for (let i = 0; i < count; i += 1) {
   });
 }
 
-for (const required of [['code', 1], ['tFRM', 1000], ['tAIB', 1000], ['tSTR', 1000]]) {
+for (const required of [['code', 1], ['tFRM', 1000], ['tAIN', 1000], ['tSTR', 1000]]) {
   if (!resources.some((resource) => resource.type === required[0] && resource.id === required[1])) {
     throw new Error(`missing resource ${required[0]}:${required[1]}`);
   }

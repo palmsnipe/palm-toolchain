@@ -3,10 +3,6 @@
 Reproducible macOS tooling for compiling, packaging, and debugging Palm OS
 software.
 
-> [!IMPORTANT]
-> This is an uncommitted extraction preview. The source layout and public
-> release are still under review.
-
 ## Included
 
 - `m68k-none-elf` GCC and binutils
@@ -82,7 +78,28 @@ make check
 ```
 
 The check compiles both a generic 68K source file and a source file including
-`PalmOS.h`, then verifies the packaging utilities and debugger.
+`PalmOS.h`, verifies the packaging utilities and debugger, and builds the
+included Hello World application into a valid Palm resource database.
+
+## Build the example application
+
+After bootstrapping the toolchain, build the included Palm OS application:
+
+```sh
+make example
+```
+
+The resulting application is written to:
+
+```text
+examples/hello-world/build/HelloWorld.prc
+```
+
+Install that file in a Palm OS device or emulator and launch **Hello World**.
+It displays a small form whose button closes the application. The example is
+intentionally self-contained and shows the complete path from C source and a
+PilRC resource file to a packaged PRC. See
+`examples/hello-world/README.md` for its layout and individual build targets.
 
 ## Using the toolchain
 
