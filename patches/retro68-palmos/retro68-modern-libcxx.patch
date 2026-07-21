@@ -1,0 +1,28 @@
+diff --git a/gcc/gcc/system.h b/gcc/gcc/system.h
+--- a/gcc/gcc/system.h
++++ b/gcc/gcc/system.h
+@@ -198,6 +198,24 @@
+ #ifdef INCLUDE_STRING
+ # include <string>
+ #endif
++#if defined (INCLUDE_ALGORITHM) || !defined (HAVE_SWAP_IN_UTILITY)
++# include <algorithm>
++#endif
++#ifdef INCLUDE_LIST
++# include <list>
++#endif
++#ifdef INCLUDE_MAP
++# include <map>
++#endif
++#ifdef INCLUDE_SET
++# include <set>
++#endif
++#ifdef INCLUDE_VECTOR
++# include <vector>
++#endif
++# include <cstring>
++# include <new>
++# include <utility>
+ #endif
+
+ /* There are an extraordinary number of issues with <ctype.h>.

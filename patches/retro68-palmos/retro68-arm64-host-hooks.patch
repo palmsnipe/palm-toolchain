@@ -1,0 +1,16 @@
+diff --git a/gcc/gcc/config/host-darwin.c b/gcc/gcc/config/host-darwin.c
+--- a/gcc/gcc/config/host-darwin.c
++++ b/gcc/gcc/config/host-darwin.c
+@@ -21,8 +21,12 @@
+ #include "config.h"
+ #include "system.h"
+ #include "coretypes.h"
++#include "hosthooks.h"
++#include "hosthooks-def.h"
+ #include "diagnostic-core.h"
+ #include "config/host-darwin.h"
+
++const struct host_hooks host_hooks = HOST_HOOKS_INITIALIZER;
++
+ /* Yes, this is really supposed to work.  */
+ static char pch_address_space[1024*1024*1024] __attribute__((aligned (4096)));

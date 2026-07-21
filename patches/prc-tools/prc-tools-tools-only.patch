@@ -1,0 +1,32 @@
+diff --git a/prc-tools-2.3/configure b/prc-tools-2.3/configure
+index 7f31ae3c..034f95cd 100755
+--- a/prc-tools-2.3/configure
++++ b/prc-tools-2.3/configure
+@@ -811,9 +811,9 @@ if test -n "$enable_targets"; then
+   fi
+ else
+   case "$target_cpu" in
+-  m68k)	config_subdirs="$config_subdirs binutils gcc295 gdb"
++  m68k)	config_subdirs="$config_subdirs binutils"
+ 	output_files="$output_files crt/Makefile libc/Makefile libm/Makefile"
+-	all_subdirs="$all_subdirs binutils gcc295 gdb crt libc libm"
++	all_subdirs="$all_subdirs binutils tools"
+ 	m68k_target="$target_alias"
+ 	gccdir="gcc295"
+ 	;;
+diff --git a/prc-tools-2.3/configure.in b/prc-tools-2.3/configure.in
+index 3cf71abb..0574f4e2 100644
+--- a/prc-tools-2.3/configure.in
++++ b/prc-tools-2.3/configure.in
+@@ -163,9 +163,9 @@ if test -n "$enable_targets"; then
+   fi
+ else
+   case "$target_cpu" in
+-  m68k)	config_subdirs="$config_subdirs binutils gcc295 gdb"
++  m68k)	config_subdirs="$config_subdirs binutils"
+ 	output_files="$output_files crt/Makefile libc/Makefile libm/Makefile"
+-	all_subdirs="$all_subdirs binutils gcc295 gdb crt libc libm"
++	all_subdirs="$all_subdirs binutils tools"
+ 	m68k_target="$target_alias"
+ 	gccdir="gcc295"
+ 	;;

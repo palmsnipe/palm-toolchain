@@ -1,0 +1,23 @@
+diff --git a/bitmap.c b/bitmap.c
+--- a/bitmap.c
++++ b/bitmap.c
+@@ -69,17 +69,17 @@ typedef struct BITMAPFILEHEADER
+
+ typedef struct BITMAPINFOHEADER
+ {
+   PILRC_ULONG biSize;
+-  long biWidth;
+-  long biHeight;
++  int biWidth;
++  int biHeight;
+   PILRC_USHORT biPlanes;
+   PILRC_USHORT biBitCount;
+   PILRC_ULONG biCompression;
+   PILRC_ULONG biSizeImage;
+-  long biXPelsPerMeter;
+-  long biYPelsPerMeter;
++  int biXPelsPerMeter;
++  int biYPelsPerMeter;
+   PILRC_ULONG biClrUsed;
+   PILRC_ULONG biClrImportant;
+ } BITMAPINFOHEADER;
