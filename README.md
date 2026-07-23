@@ -160,7 +160,8 @@ toolchain archives: pointer returns in A0, 32-bit FourCC constants with
 some libgcc helpers combine `-O2` with position-independent code, so libgcc is
 built at `-O1`; application code remains optimized at the level selected by
 each project. This exact source-and-patch combination passes `make check`, the
-complete PalmTLS build suite, and an ARM-device HTTPS runtime test.
+complete PalmTLS build suite, and verified HTTPS runtime tests on an emulated
+68K Palm m515 and ARM Tungsten E2.
 
 Native ARMlets are a separate compilation target; they do not use the 68K GCC.
 Projects should make their ARM compiler configurable and default to `clang`
