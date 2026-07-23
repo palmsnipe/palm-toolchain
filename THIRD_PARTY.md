@@ -11,7 +11,7 @@ third-party source archives or generated binaries. Exact inputs are recorded in
 | prc-tools-remix | `jichu4n/prc-tools-remix` | Cloned at an exact commit and patched locally |
 | GNU GDB | GNU release archive | Downloaded by checksum |
 | GNU config scripts | `gcc-mirror/gcc` | Downloaded by checksum |
-| Palm OS SDK 5r3 | User supplied | Never downloaded, redistributed, or modified by this repository |
+| Palm OS SDK 5r4 | User supplied | Never downloaded or redistributed; copied locally and its GCC trap declarations are adapted during installation |
 
 The MIT License applies to original material authored for this repository.
 Downloaded projects retain their own copyright and license. Compatibility

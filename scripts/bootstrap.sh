@@ -132,7 +132,7 @@ case "${1:-all}" in
   debugger) prepare_sources; build_gdb ;;
   all)
     if [[ -z "${PALM_SDK_SOURCE:-}" ]]; then
-      echo "PALM_SDK_SOURCE must point to a Palm OS SDK 5r3 directory." >&2
+      echo "PALM_SDK_SOURCE must point to a Palm OS SDK 5r4 directory." >&2
       exit 2
     fi
     prepare_sources

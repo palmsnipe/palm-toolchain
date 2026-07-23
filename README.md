@@ -9,7 +9,7 @@ software.
 - PilRC
 - the PRC packaging and object-resource utilities from prc-tools-remix
 - `m68k-none-elf-gdb`
-- a user-supplied, unchanged Palm OS SDK 5r3 installation
+- a user-supplied Palm OS SDK 5r4 installation with local GCC compatibility
 - relocation generation and PRC validation helpers
 
 ## Repository layout
@@ -34,16 +34,17 @@ clean rebuild is required. Advanced users can override its location with
 - Homebrew
 - An internet connection for the first build
 - Several gigabytes of free disk space for downloaded sources and build files
-- An existing Palm OS SDK 5r3 directory
+- An existing Palm OS SDK 5r4 directory
 
 The SDK directory must contain at least:
 
 ```text
-sdk-5r3/
-  Palm License.txt
+sdk-5r4/
   include/
     PalmOS.h
     PalmTypes.h
+    _PalmTypes.h
+    header.gcc
 ```
 
 ## First-time setup
@@ -61,11 +62,14 @@ Install the ordinary macOS build dependencies:
 brew bundle
 ```
 
-Provide the location of the SDK and build everything:
+Provide the SDK locations and build everything:
 
 ```sh
-PALM_SDK_SOURCE=/path/to/sdk-5r3 make bootstrap
+PALM_SDK_SOURCE=/path/to/sdk-5r4 make bootstrap
 ```
+
+The same SDK supports ordinary 68K applications and projects containing native
+ARM modules.
 
 The first build downloads pinned sources, verifies their checksums, compiles
 the toolchain, and installs everything under `.toolchain/prefix`. Subsequent
@@ -113,7 +117,7 @@ This adds `.toolchain/prefix/bin` to `PATH` and defines:
 
 ```text
 PALM_TOOLCHAIN_PREFIX=/path/to/palm-toolchain/.toolchain/prefix
-PALM_SDK_HOME=/path/to/palm-toolchain/.toolchain/prefix/palmdev/sdk-5r3
+PALM_SDK_HOME=/path/to/palm-toolchain/.toolchain/prefix/palmdev/sdk
 ```
 
 Another repository can use `PALM_TOOLCHAIN_PREFIX` directly instead of
@@ -121,16 +125,25 @@ requiring global compiler installation.
 
 ## Palm OS SDK
 
-The Palm OS SDK is not open-source project content. Obtain SDK 5r3 separately,
-read its included license, and provide an existing directory explicitly during
+The Palm OS SDK is not open-source project content. Obtain SDK 5r4 separately,
+read its included terms, and provide its directory explicitly during
 bootstrap:
 
 ```sh
-PALM_SDK_SOURCE=/path/to/sdk-5r3 make bootstrap
+PALM_SDK_SOURCE=/path/to/sdk-5r4 make bootstrap
 ```
 
-The installer verifies the expected layout and makes an unchanged local copy.
-It never downloads the SDK.
+The installer never downloads or changes the supplied SDK directory. It makes a
+private copy under `.toolchain/prefix/palmdev/sdk` and adapts that copy's
+obsolete GCC `callseq` trap declarations to the `raw_inline` declarations
+supported by this compiler. This compatibility change is required for 68K Palm
+system calls to link correctly.
+
+For an existing toolchain installation, replace the installed SDK with:
+
+```sh
+make install-sdk PALM_SDK_SOURCE=/path/to/sdk-5r4
+```
 
 Every network input is pinned by commit or SHA-256 in `config/sources.lock`.
 
@@ -140,9 +153,8 @@ The compiler source is a pinned Retro68-derived snapshot. Retro68 is an
 implementation detail of the compiler build; users do not need to install or
 manage it separately.
 
-Before the first release, compiler-side compatibility with the SDK's original
-`callseq` declarations must be completed and covered by a Palm-header smoke
-test. The SDK itself remains unchanged.
+`make check` compiles Palm headers and the example application against the
+locally adapted SDK, catching regressions in the GCC trap declarations.
 
 ## License
 

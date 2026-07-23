@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: prerequisites fetch bootstrap check example example-clean clean
+.PHONY: prerequisites fetch bootstrap install-sdk check example example-clean clean
 
 prerequisites:
 	@scripts/prerequisites.sh
@@ -10,6 +10,9 @@ fetch:
 
 bootstrap: prerequisites
 	@scripts/bootstrap.sh all
+
+install-sdk:
+	@scripts/install-sdk.sh "$(PALM_SDK_SOURCE)"
 
 check:
 	@scripts/check.sh

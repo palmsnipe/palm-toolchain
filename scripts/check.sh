@@ -12,9 +12,9 @@ for command_name in "${required[@]}"; do
   fi
 done
 
-sdk="$PREFIX/palmdev/sdk-5r3"
+sdk="$PREFIX/palmdev/sdk"
 if [[ ! -f "$sdk/include/PalmOS.h" ]]; then
-  echo "Missing Palm OS SDK 5r3 under $PREFIX/palmdev; rerun bootstrap with PALM_SDK_SOURCE." >&2
+  echo "Missing Palm OS SDK 5r4 under $PREFIX/palmdev; rerun bootstrap with PALM_SDK_SOURCE." >&2
   exit 1
 fi
 
@@ -33,6 +33,13 @@ printf '%s\n' 'int palm_toolchain_probe(void) { return 42; }' >"$tmp/probe.c"
   -isystem"$sdk/include/Dynamic" \
   -isystem"$sdk/include/Libraries" \
   -c "$TOOLCHAIN_ROOT/tests/compiler-smoke/palm.c" -o "$tmp/palm.o"
+
+grep -q '__raw_inline__' "$sdk/include/PalmTypes.h"
+if grep -q '__callseq__' "$sdk/include/PalmTypes.h"; then
+  echo "Palm OS SDK GCC compatibility patch is incomplete." >&2
+  exit 1
+fi
+echo "Palm OS SDK 5r4: $sdk"
 
 "$PREFIX/bin/m68k-none-elf-gcc" --version | head -1
 "$PREFIX/bin/m68k-none-elf-gdb" --version | head -1

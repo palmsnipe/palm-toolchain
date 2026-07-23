@@ -6,7 +6,7 @@ toolchain. It opens one form and exits when **Done** is tapped.
 From the repository root, bootstrap the toolchain once and build the example:
 
 ```sh
-PALM_SDK_SOURCE=/path/to/sdk-5r3 make bootstrap
+PALM_SDK_SOURCE=/path/to/sdk-5r4 make bootstrap
 make example
 ```
 
