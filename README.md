@@ -5,7 +5,7 @@ software.
 
 ## Included
 
-- Palm-compatible `m68k-none-elf` GCC 16.1
+- Palm-compatible `m68k-none-elf` GCC 9.1
 - GNU binutils 2.46.1
 - PilRC
 - the PRC packaging and object-resource utilities from prc-tools-remix
@@ -151,11 +151,15 @@ Every network input is pinned by commit or SHA-256 in `config/sources.lock`.
 
 ## Development status
 
-The compiler source is pinned to a current Retro68 commit. Retro68 carries the
-m68k changes needed by the Palm OS SDK; users do not need to install or manage
-it separately. Palm C projects should select a language version explicitly,
-such as `-std=gnu17`, because GCC 16 defaults to C23 and the historical SDK
-headers use `false` and `true` as enum constants.
+The compiler is pinned to the latest Retro68 revision that passes the PalmTLS
+runtime tests. Retro68's GCC 12, 15, and 16 branches currently regress the
+Palm `-mshort` runtime, so GCC 9.1 remains the newest verified choice. The
+repository patches its pointer-return ABI, FourCC handling, position-independent
+runtime helpers, and Newlib `memset` stack layout.
+
+Users do not need to install or manage Retro68 separately. Palm C projects
+should still select a language version explicitly, such as `-std=gnu17`, to
+keep builds deterministic.
 
 `make check` compiles Palm headers and the example application against the
 locally adapted SDK, catching regressions in the GCC trap declarations.

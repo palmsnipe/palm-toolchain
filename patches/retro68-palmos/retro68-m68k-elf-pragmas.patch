@@ -2,21 +2,39 @@ diff --git a/gcc/gcc/config.gcc b/gcc/gcc/config.gcc
 index b067a0c89..3aaf50f31 100644
 --- a/gcc/gcc/config.gcc
 +++ b/gcc/gcc/config.gcc
-@@ -2481,7 +2481,7 @@ m68k-*-elf* | fido-*-elf*)
- 	esac
- 	tm_file="${tm_file} m68k/m68k-none.h m68k/m68kelf.h elfos.h newlib-stdint.h m68k/m68kemb.h m68k/m68020-elf.h"
+@@ -2087,3 +2087,3 @@ m68k-*-elf* | fido-*-elf*)
  	tm_defines="${tm_defines} MOTOROLA=1"
 -	tmake_file="m68k/t-floatlib m68k/t-m68kbare m68k/t-m68kelf"
 +	tmake_file="m68k/t-floatlib m68k/t-m68kbare m68k/t-m68kelf m68k/t-macos"
  	# Add multilibs for targets other than fido.
- 	case ${target} in
- 	fido-*-elf*)
-diff --git a/gcc/gcc/config/m68k/m68k.cc b/gcc/gcc/config/m68k/m68k.cc
---- a/gcc/gcc/config/m68k/m68k.cc
-+++ b/gcc/gcc/config/m68k/m68k.cc
-@@ -6131,4 +6131,4 @@ m68k_function_value (const_tree valtype, const_tree func_decl_or_type, bool out
+diff --git a/gcc/gcc/config/m68k/m68k.c b/gcc/gcc/config/m68k/m68k.c
+--- a/gcc/gcc/config/m68k/m68k.c
++++ b/gcc/gcc/config/m68k/m68k.c
+@@ -5540,25 +5540,7 @@ m68k_function_value (const_tree valtype, const_tree func_decl_or_type, bool out
 -#if 1 /* POINTERS_IN_D0 */
 +#if 0 /* Palm OS returns pointers in A0.  */
    return gen_rtx_REG (mode, D0_REG);
  #else
-   /* If the function returns a pointer, push that into %a0.  */
+-  /* If the function returns a pointer, push that into %a0.  */
+-  if (type && POINTER_TYPE_P (TREE_TYPE (type)) && !outgoing)
+-    /* For compatibility with the large body of existing code which
+-       does not always properly declare external functions returning
+-       pointer types, the m68k/SVR4 convention is to copy the value
+-       returned for pointer functions from a0 to d0 in the function
+-       epilogue, so that callers that have neglected to properly
+-       declare the callee can still find the correct return value in
+-       d0.  */
+-    return gen_rtx_PARALLEL
+-      (mode,
+-       gen_rtvec (2,
+-		  gen_rtx_EXPR_LIST (VOIDmode,
+-				     gen_rtx_REG (mode, A0_REG),
+-				     const0_rtx),
+-		  gen_rtx_EXPR_LIST (VOIDmode,
+-				     gen_rtx_REG (mode, D0_REG),
+-				     const0_rtx)));
+-  else if (POINTER_TYPE_P (valtype))
++  if (POINTER_TYPE_P (valtype))
+     return gen_rtx_REG (mode, A0_REG);
+   else
+     return gen_rtx_REG (mode, D0_REG);

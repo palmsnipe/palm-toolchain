@@ -28,6 +28,15 @@ prepare_sources() {
   apply_git_patch_once "$SOURCES/Retro68" \
     "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-palmos-fourcc.patch" \
     "$SOURCES/Retro68/.palmsnipe-palmos-fourcc"
+  apply_git_patch_once "$SOURCES/Retro68" \
+    "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-palmos-mshort-memset.patch" \
+    "$SOURCES/Retro68/.palmsnipe-palmos-mshort-memset"
+  apply_git_patch_once "$SOURCES/Retro68" \
+    "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-palmos-pic-libgcc.patch" \
+    "$SOURCES/Retro68/.palmsnipe-palmos-pic-libgcc"
+  apply_git_patch_once "$SOURCES/Retro68" \
+    "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-modern-darwin.patch" \
+    "$SOURCES/Retro68/.palmsnipe-modern-darwin"
   apply_archive_patch_once "$SOURCES/pilrc-3.2" \
     "$TOOLCHAIN_ROOT/patches/pilrc/pilrc-64-bit-resource-directory.patch" \
     "$SOURCES/pilrc-3.2/.palmsnipe-resource-directory-64bit"
@@ -47,11 +56,14 @@ build_compiler() {
     printf '%s\n' "$RETRO68_COMMIT" "$BINUTILS_SHA256"
     sha256_file "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-m68k-elf-pragmas.patch"
     sha256_file "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-palmos-fourcc.patch"
+    sha256_file "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-palmos-mshort-memset.patch"
+    sha256_file "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-palmos-pic-libgcc.patch"
+    sha256_file "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-modern-darwin.patch"
   } | shasum -a 256 | awk '{print $1}')"
   compiler_stamp="$PREFIX/.palm-toolchain-compiler.sha256"
   if [[ -x "$PREFIX/bin/m68k-none-elf-gcc" && \
         -x "$PREFIX/bin/m68k-none-elf-ld" ]] && \
-     [[ "$("$PREFIX/bin/m68k-none-elf-gcc" -dumpfullversion)" == "16.1.0" ]] && \
+     [[ "$("$PREFIX/bin/m68k-none-elf-gcc" -dumpfullversion)" == "$RETRO68_GCC_VERSION" ]] && \
      [[ "$("$PREFIX/bin/m68k-none-elf-ld" --version | head -1)" == *"2.46.1"* ]] && \
      [[ -f "$compiler_stamp" && "$(cat "$compiler_stamp")" == "$compiler_fingerprint" ]]; then
     return
