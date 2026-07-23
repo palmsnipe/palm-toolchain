@@ -39,6 +39,10 @@ printf '%s\n' 'int palm_toolchain_probe(void) { return 42; }' >"$tmp/probe.c"
   -isystem"$sdk/include/Libraries" \
   -c "$TOOLCHAIN_ROOT/tests/compiler-smoke/palm.c" -o "$tmp/palm.o"
 
+"$PREFIX/bin/m68k-none-elf-objdump" -d "$tmp/palm.o" \
+  | sed -n '/<palm_pointer_return_probe>:/,/^$/p' \
+  | grep -q '%a0'
+
 grep -q '__raw_inline__' "$sdk/include/PalmTypes.h"
 if grep -q '__callseq__' "$sdk/include/PalmTypes.h"; then
   echo "Palm OS SDK GCC compatibility patch is incomplete." >&2

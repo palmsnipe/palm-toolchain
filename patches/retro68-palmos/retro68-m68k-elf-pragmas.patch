@@ -11,3 +11,12 @@ index b067a0c89..3aaf50f31 100644
  	# Add multilibs for targets other than fido.
  	case ${target} in
  	fido-*-elf*)
+diff --git a/gcc/gcc/config/m68k/m68k.cc b/gcc/gcc/config/m68k/m68k.cc
+--- a/gcc/gcc/config/m68k/m68k.cc
++++ b/gcc/gcc/config/m68k/m68k.cc
+@@ -6131,4 +6131,4 @@ m68k_function_value (const_tree valtype, const_tree func_decl_or_type, bool out
+-#if 1 /* POINTERS_IN_D0 */
++#if 0 /* Palm OS returns pointers in A0.  */
+   return gen_rtx_REG (mode, D0_REG);
+ #else
+   /* If the function returns a pointer, push that into %a0.  */
