@@ -1,7 +1,10 @@
 SHELL := /bin/bash
 
-.PHONY: prerequisites fetch bootstrap-core bootstrap install-sdk check-core \
-	check-arm check-sdk check example example-clean clean
+.PHONY: setup prerequisites fetch bootstrap-core bootstrap debugger install-sdk \
+	check-core check-arm check-sdk check example example-clean clean
+
+setup: prerequisites
+	@scripts/bootstrap.sh all
 
 prerequisites:
 	@scripts/prerequisites.sh
@@ -10,12 +13,12 @@ fetch:
 	@scripts/fetch-sources.sh
 
 bootstrap-core: prerequisites
-	@scripts/bootstrap.sh compiler
-	@scripts/bootstrap.sh arm
-	@scripts/bootstrap.sh debugger
+	@scripts/bootstrap.sh core
 
-bootstrap: prerequisites
-	@scripts/bootstrap.sh all
+bootstrap: setup
+
+debugger: prerequisites
+	@scripts/bootstrap.sh debugger
 
 install-sdk:
 	@scripts/install-sdk.sh "$(PALM_SDK_SOURCE)"
@@ -39,5 +42,10 @@ example-clean:
 	@$(MAKE) -C examples/hello-world clean
 
 clean:
-	@echo "Generated state is contained in .toolchain/."
-	@echo "It is ignored by Git and is not removed automatically."
+	@state="$${PALM_TOOLCHAIN_STATE:-$(CURDIR)/.toolchain}"; \
+		case "$$state" in ""|"/"|"."|"..") \
+			echo "Refusing unsafe toolchain state path: $$state" >&2; exit 1 ;; \
+		esac; \
+		rm -rf -- "$$state/build"; \
+		echo "Removed $$state/build; downloads, sources, SDK, and installed tools were retained."
+	@$(MAKE) -C examples/hello-world clean

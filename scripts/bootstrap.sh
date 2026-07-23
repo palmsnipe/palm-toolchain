@@ -227,6 +227,14 @@ case "${1:-all}" in
   compiler) prepare_sources; build_compiler; build_pilrc; build_prc_tools ;;
   arm) prepare_sources; build_arm_compiler ;;
   debugger) prepare_sources; build_gdb ;;
+  core)
+    prepare_sources
+    build_compiler
+    build_arm_compiler
+    build_pilrc
+    build_prc_tools
+    build_gdb
+    ;;
   all)
     if [[ -z "${PALM_SDK_SOURCE:-}" ]]; then
       echo "PALM_SDK_SOURCE must point to a Palm OS SDK 5r4 directory." >&2
@@ -240,7 +248,7 @@ case "${1:-all}" in
     build_prc_tools
     build_gdb
     ;;
-  *) echo "usage: $0 [prepare|compiler|arm|debugger|all]" >&2; exit 2 ;;
+  *) echo "usage: $0 [prepare|compiler|arm|debugger|core|all]" >&2; exit 2 ;;
 esac
 
 echo "Palm toolchain installed in $PREFIX"
