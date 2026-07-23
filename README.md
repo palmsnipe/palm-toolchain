@@ -5,7 +5,8 @@ software.
 
 ## Included
 
-- `m68k-none-elf` GCC and binutils
+- Palm-compatible `m68k-none-elf` GCC 16.1
+- GNU binutils 2.46.1
 - PilRC
 - the PRC packaging and object-resource utilities from prc-tools-remix
 - `m68k-none-elf-gdb`
@@ -82,8 +83,9 @@ make check
 ```
 
 The check compiles both a generic 68K source file and a source file including
-`PalmOS.h`, verifies the packaging utilities and debugger, and builds the
-included Hello World application into a valid Palm resource database.
+`PalmOS.h`, verifies that four-character Palm IDs remain 32-bit with `-mshort`,
+checks the packaging utilities and debugger, and builds the included Hello
+World application into a valid Palm resource database.
 
 ## Build the example application
 
@@ -149,9 +151,11 @@ Every network input is pinned by commit or SHA-256 in `config/sources.lock`.
 
 ## Development status
 
-The compiler source is a pinned Retro68-derived snapshot. Retro68 is an
-implementation detail of the compiler build; users do not need to install or
-manage it separately.
+The compiler source is pinned to a current Retro68 commit. Retro68 carries the
+m68k changes needed by the Palm OS SDK; users do not need to install or manage
+it separately. Palm C projects should select a language version explicitly,
+such as `-std=gnu17`, because GCC 16 defaults to C23 and the historical SDK
+headers use `false` and `true` as enum constants.
 
 `make check` compiles Palm headers and the example application against the
 locally adapted SDK, catching regressions in the GCC trap declarations.

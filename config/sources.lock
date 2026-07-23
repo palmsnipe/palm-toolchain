@@ -2,10 +2,13 @@
 # Immutable external inputs. Archives are verified before extraction and Git
 # repositories are checked out detached at the exact commit listed here.
 
-# Pinned source snapshot containing the Palm-target GCC work.
-RETRO68_SOURCE_URL="https://drive.usercontent.google.com/download?id=1MxexZ4JhfDsmgSFkytjjNm1lCkr43DZk&export=download&confirm=t"
-RETRO68_SOURCE_FILE="dmitry-retro68-palmos-gcc.tar.xz"
-RETRO68_SOURCE_SHA256="338af65f461210a7ca597795ffa7a49dffa226e07401483e4a4b9a4cbff0eda0"
+# Current Retro68 source containing the Palm-compatible GCC 16.1 changes.
+RETRO68_REPOSITORY="https://github.com/autc04/Retro68.git"
+RETRO68_COMMIT="f99ecb5aeb6fbb004c647518ea760daba2b1f6bb"
+
+BINUTILS_URL="https://sourceware.org/pub/binutils/releases/binutils-2.46.1.tar.xz"
+BINUTILS_FILE="binutils-2.46.1.tar.xz"
+BINUTILS_SHA256="e127a709cba24c76de8936cb7083dd768f28cd37eb010492e2f19b71eb1294e4"
 
 PILRC_URL="https://downloads.sourceforge.net/project/pilrc/pilrc/3.2/pilrc-3.2.tar.gz"
 PILRC_FILE="pilrc-3.2.tar.gz"
@@ -18,7 +21,7 @@ GDB_URL="https://ftp.gnu.org/gnu/gdb/gdb-17.2.tar.xz"
 GDB_FILE="gdb-17.2.tar.xz"
 GDB_SHA256="1c036c0d72e4b3d1fb5c94c88632add6f9d76f4d7c4d2ea793c12a9f19a3228c"
 
-CONFIG_GUESS_URL="https://raw.githubusercontent.com/gcc-mirror/gcc/releases/gcc-9.1.0/config.guess"
-CONFIG_GUESS_SHA256="a69d1de72f1e07ceae863dc1f83b497b9832246d6d67f0e87997aa219040518d"
-CONFIG_SUB_URL="https://raw.githubusercontent.com/gcc-mirror/gcc/releases/gcc-9.1.0/config.sub"
-CONFIG_SUB_SHA256="8fed22bcb29a3513bcd1702c69562b343af1669b97a21810a4dd1ccdf6950ea5"
+CONFIG_GUESS_URL="https://raw.githubusercontent.com/gcc-mirror/gcc/releases/gcc-16.1.0/config.guess"
+CONFIG_GUESS_SHA256="7d1e3c79b86de601c3a0457855ab854dffd15163f53c91edac54a7be2e9c931b"
+CONFIG_SUB_URL="https://raw.githubusercontent.com/gcc-mirror/gcc/releases/gcc-16.1.0/config.sub"
+CONFIG_SUB_SHA256="71b8d73e46e0c31b1dc91ba5306f5ef0af009273b3bb283f31d8dad69666fa9e"

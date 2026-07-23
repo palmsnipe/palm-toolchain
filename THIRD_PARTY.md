@@ -6,11 +6,12 @@ third-party source archives or generated binaries. Exact inputs are recorded in
 
 | Input | Source | Treatment |
 | --- | --- | --- |
-| Retro68 / GCC snapshot | Pinned archive | Downloaded by checksum and patched locally |
+| Retro68 / GCC 16.1 | `autc04/Retro68` | Cloned at an exact commit and patched locally |
+| GNU binutils 2.46.1 | Sourceware release | Downloaded by checksum |
 | PilRC 3.2 | SourceForge release | Downloaded by checksum and patched locally |
 | prc-tools-remix | `jichu4n/prc-tools-remix` | Cloned at an exact commit and patched locally |
 | GNU GDB | GNU release archive | Downloaded by checksum |
-| GNU config scripts | `gcc-mirror/gcc` | Downloaded by checksum |
+| GNU config scripts | GCC 16.1 release | Downloaded by checksum |
 | Palm OS SDK 5r4 | User supplied | Never downloaded or redistributed; copied locally and its GCC trap declarations are adapted during installation |
 
 The MIT License applies to original material authored for this repository.

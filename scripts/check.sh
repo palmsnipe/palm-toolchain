@@ -21,10 +21,15 @@ fi
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 printf '%s\n' 'int palm_toolchain_probe(void) { return 42; }' >"$tmp/probe.c"
-"$PREFIX/bin/m68k-none-elf-gcc" -m68000 -mshort -c "$tmp/probe.c" -o "$tmp/probe.o"
+"$PREFIX/bin/m68k-none-elf-gcc" -std=gnu17 -m68000 -mshort \
+  -c "$tmp/probe.c" -o "$tmp/probe.o"
 "$PREFIX/bin/m68k-none-elf-objdump" -f "$tmp/probe.o" | grep -q m68k
 
-"$PREFIX/bin/m68k-none-elf-gcc" -m68000 -mno-align-int -mshort \
+"$PREFIX/bin/m68k-none-elf-gcc" -std=gnu17 -m68000 -mshort \
+  -c "$TOOLCHAIN_ROOT/tests/compiler-smoke/fourcc.c" -o "$tmp/fourcc.o"
+"$PREFIX/bin/m68k-none-elf-objdump" -s "$tmp/fourcc.o" | grep -q 50544c53
+
+"$PREFIX/bin/m68k-none-elf-gcc" -std=gnu17 -m68000 -mno-align-int -mshort \
   -isystem"$sdk/include" \
   -isystem"$sdk/include/Core" \
   -isystem"$sdk/include/Core/Hardware" \
@@ -46,5 +51,6 @@ echo "Palm OS SDK 5r4: $sdk"
 "$PREFIX/bin/pilrc" --version 2>&1 | head -1
 node --check "$TOOLCHAIN_ROOT/tools/generate-m68k-relocs.mjs"
 node --check "$TOOLCHAIN_ROOT/tools/validate-prc.mjs"
-"${MAKE:-make}" -C "$TOOLCHAIN_ROOT/examples/hello-world" test
+"${MAKE:-make}" -C "$TOOLCHAIN_ROOT/examples/hello-world" \
+  PALM_TOOLCHAIN_PREFIX="$PREFIX" test
 echo "Toolchain check passed."

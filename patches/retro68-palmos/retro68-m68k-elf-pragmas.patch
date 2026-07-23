@@ -1,0 +1,13 @@
+diff --git a/gcc/gcc/config.gcc b/gcc/gcc/config.gcc
+index b067a0c89..3aaf50f31 100644
+--- a/gcc/gcc/config.gcc
++++ b/gcc/gcc/config.gcc
+@@ -2481,7 +2481,7 @@ m68k-*-elf* | fido-*-elf*)
+ 	esac
+ 	tm_file="${tm_file} m68k/m68k-none.h m68k/m68kelf.h elfos.h newlib-stdint.h m68k/m68kemb.h m68k/m68020-elf.h"
+ 	tm_defines="${tm_defines} MOTOROLA=1"
+-	tmake_file="m68k/t-floatlib m68k/t-m68kbare m68k/t-m68kelf"
++	tmake_file="m68k/t-floatlib m68k/t-m68kbare m68k/t-m68kelf m68k/t-macos"
+ 	# Add multilibs for targets other than fido.
+ 	case ${target} in
+ 	fido-*-elf*)

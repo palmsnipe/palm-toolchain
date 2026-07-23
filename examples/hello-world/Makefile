@@ -28,7 +28,7 @@ SDK_INCLUDES := -isystem$(SDK) -isystem$(SDK)/Core \
 	-isystem$(SDK)/Libraries
 ABI_FLAGS := -Wno-multichar -m68000 -mno-align-int -mpcrel -fpic \
 	-fshort-enums -mshort
-CFLAGS := $(ABI_FLAGS) -Os -Wall -Wextra -Wno-unused-parameter \
+CFLAGS := $(ABI_FLAGS) -std=gnu17 -Os -Wall -Wextra -Wno-unused-parameter \
 	-Wno-old-style-declaration -MMD -MP -ffunction-sections -fdata-sections \
 	-I$(ROOT)/resources $(SDK_INCLUDES)
 LDFLAGS := $(ABI_FLAGS) -Os -nostartfiles -Wl,--gc-sections \

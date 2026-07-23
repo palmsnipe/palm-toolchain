@@ -8,8 +8,8 @@ prepare_sources() {
   "$TOOLCHAIN_ROOT/scripts/fetch-sources.sh"
   mkdir -p "$BUILD" "$PREFIX"
 
-  if [[ ! -d "$SOURCES/Retro68" ]]; then
-    tar -xJf "$DOWNLOADS/$RETRO68_SOURCE_FILE" -C "$SOURCES"
+  if [[ ! -d "$SOURCES/binutils-2.46.1" ]]; then
+    tar -xJf "$DOWNLOADS/$BINUTILS_FILE" -C "$SOURCES"
   fi
   if [[ ! -d "$SOURCES/pilrc-3.2" ]]; then
     mkdir -p "$SOURCES/pilrc-3.2"
@@ -22,15 +22,12 @@ prepare_sources() {
   apply_git_patch_once "$SOURCES/prc-tools-remix" \
     "$TOOLCHAIN_ROOT/patches/prc-tools/prc-tools-tools-only.patch" \
     "$SOURCES/prc-tools-remix/.palmsnipe-tools-only"
-  apply_archive_patch_once "$SOURCES/Retro68" \
-    "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-modern-darwin.patch" \
-    "$SOURCES/Retro68/.palmsnipe-modern-darwin"
-  apply_archive_patch_once "$SOURCES/Retro68" \
-    "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-arm64-host-hooks.patch" \
-    "$SOURCES/Retro68/.palmsnipe-arm64-host-hooks"
-  apply_archive_patch_once "$SOURCES/Retro68" \
-    "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-modern-libcxx.patch" \
-    "$SOURCES/Retro68/.palmsnipe-modern-libcxx"
+  apply_git_patch_once "$SOURCES/Retro68" \
+    "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-m68k-elf-pragmas.patch" \
+    "$SOURCES/Retro68/.palmsnipe-m68k-elf-pragmas"
+  apply_git_patch_once "$SOURCES/Retro68" \
+    "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-palmos-fourcc.patch" \
+    "$SOURCES/Retro68/.palmsnipe-palmos-fourcc"
   apply_archive_patch_once "$SOURCES/pilrc-3.2" \
     "$TOOLCHAIN_ROOT/patches/pilrc/pilrc-64-bit-resource-directory.patch" \
     "$SOURCES/pilrc-3.2/.palmsnipe-resource-directory-64bit"
@@ -39,23 +36,38 @@ prepare_sources() {
     "$SOURCES/pilrc-3.2/.palmsnipe-lp64-bitmap"
 
   while IFS= read -r -d '' file; do cp "$DOWNLOADS/config.guess" "$file"; chmod +x "$file"; done \
-    < <(find -L "$SOURCES/Retro68" "$SOURCES/prc-tools-remix/prc-tools-2.3" -name config.guess -print0)
+    < <(find -L "$SOURCES/prc-tools-remix/prc-tools-2.3" -name config.guess -print0)
   while IFS= read -r -d '' file; do cp "$DOWNLOADS/config.sub" "$file"; chmod +x "$file"; done \
-    < <(find -L "$SOURCES/Retro68" "$SOURCES/prc-tools-remix/prc-tools-2.3" -name config.sub -print0)
+    < <(find -L "$SOURCES/prc-tools-remix/prc-tools-2.3" -name config.sub -print0)
 }
 
 build_compiler() {
-  [[ -x "$PREFIX/bin/m68k-none-elf-gcc" ]] && return
+  local compiler_fingerprint compiler_stamp
+  compiler_fingerprint="$({
+    printf '%s\n' "$RETRO68_COMMIT" "$BINUTILS_SHA256"
+    sha256_file "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-m68k-elf-pragmas.patch"
+    sha256_file "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-palmos-fourcc.patch"
+  } | shasum -a 256 | awk '{print $1}')"
+  compiler_stamp="$PREFIX/.palm-toolchain-compiler.sha256"
+  if [[ -x "$PREFIX/bin/m68k-none-elf-gcc" && \
+        -x "$PREFIX/bin/m68k-none-elf-ld" ]] && \
+     [[ "$("$PREFIX/bin/m68k-none-elf-gcc" -dumpfullversion)" == "16.1.0" ]] && \
+     [[ "$("$PREFIX/bin/m68k-none-elf-ld" --version | head -1)" == *"2.46.1"* ]] && \
+     [[ -f "$compiler_stamp" && "$(cat "$compiler_stamp")" == "$compiler_fingerprint" ]]; then
+    return
+  fi
   local gmp mpfr mpc
   gmp="$(brew --prefix gmp)"
   mpfr="$(brew --prefix mpfr)"
   mpc="$(brew --prefix libmpc)"
 
+  rm -rf "$BUILD/binutils"
   mkdir -p "$BUILD/binutils"
   (
     cd "$BUILD/binutils"
-    "$SOURCES/Retro68/binutils/configure" \
-      --target=m68k-none-elf --prefix="$PREFIX" --disable-doc --disable-nls
+    "$SOURCES/binutils-2.46.1/configure" \
+      --target=m68k-none-elf --prefix="$PREFIX" --disable-doc \
+      --disable-nls --disable-werror
     make -j"$JOBS"
     make install
   )
@@ -74,10 +86,12 @@ build_compiler() {
         --target=m68k-none-elf --prefix="$PREFIX" \
         --enable-languages=c --with-arch=m68k --with-cpu=m68000 \
         --with-gmp="$gmp" --with-mpfr="$mpfr" --with-mpc="$mpc" \
+        --without-headers --with-newlib \
         --disable-libssp --disable-multilib --disable-nls --disable-lto
     make -j"$JOBS" || make
     make install
   )
+  printf '%s\n' "$compiler_fingerprint" >"$compiler_stamp"
 }
 
 build_pilrc() {
