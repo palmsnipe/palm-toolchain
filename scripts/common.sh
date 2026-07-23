@@ -7,13 +7,30 @@ DOWNLOADS="$TOOLCHAIN_STATE/downloads"
 SOURCES="$TOOLCHAIN_STATE/src"
 BUILD="$TOOLCHAIN_STATE/build"
 PREFIX="$TOOLCHAIN_STATE/prefix"
-JOBS="${JOBS:-$(sysctl -n hw.logicalcpu 2>/dev/null || echo 4)}"
+HOST_OS="$(uname -s)"
+JOBS="${JOBS:-$(
+  getconf _NPROCESSORS_ONLN 2>/dev/null ||
+    sysctl -n hw.logicalcpu 2>/dev/null ||
+    echo 4
+)}"
 
 # shellcheck source=../config/sources.lock
 source "$TOOLCHAIN_ROOT/config/sources.lock"
 
 sha256_file() {
-  shasum -a 256 "$1" | awk '{print $1}'
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$1" | awk '{print $1}'
+  else
+    shasum -a 256 "$1" | awk '{print $1}'
+  fi
+}
+
+sha256_stdin() {
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum | awk '{print $1}'
+  else
+    shasum -a 256 | awk '{print $1}'
+  fi
 }
 
 download_verified() {
@@ -24,7 +41,10 @@ download_verified() {
 
   rm -f "$destination.part"
   echo "Downloading $(basename "$destination")"
-  curl --fail --location --retry 3 --output "$destination.part" "$url"
+  curl --fail --location \
+    --retry 5 --retry-delay 2 --retry-all-errors \
+    --speed-limit 1024 --speed-time 30 \
+    --continue-at - --output "$destination.part" "$url"
 
   local actual
   actual="$(sha256_file "$destination.part")"

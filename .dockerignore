@@ -1,0 +1,5 @@
+.git
+.toolchain
+examples/hello-world/build
+*.log
+.DS_Store

@@ -55,7 +55,7 @@ build_compiler() {
     sha256_file "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-palmos-fourcc.patch"
     sha256_file "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-palmos-mshort-memset.patch"
     sha256_file "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-palmos-pic-libgcc.patch"
-  } | shasum -a 256 | awk '{print $1}')"
+  } | sha256_stdin)"
   compiler_stamp="$PREFIX/.palm-toolchain-compiler.sha256"
   if [[ -x "$PREFIX/bin/m68k-none-elf-gcc" && \
         -x "$PREFIX/bin/m68k-none-elf-ld" ]] && \
@@ -64,10 +64,16 @@ build_compiler() {
      [[ -f "$compiler_stamp" && "$(cat "$compiler_stamp")" == "$compiler_fingerprint" ]]; then
     return
   fi
-  local gmp mpfr mpc
-  gmp="$(brew --prefix gmp)"
-  mpfr="$(brew --prefix mpfr)"
-  mpc="$(brew --prefix libmpc)"
+  local configure_math=()
+  local makeinfo=makeinfo
+  if [[ "$HOST_OS" == Darwin ]]; then
+    configure_math=(
+      "--with-gmp=$(brew --prefix gmp)"
+      "--with-mpfr=$(brew --prefix mpfr)"
+      "--with-mpc=$(brew --prefix libmpc)"
+    )
+    makeinfo="$(brew --prefix texinfo)/bin/makeinfo"
+  fi
 
   rm -rf "$BUILD/binutils"
   mkdir -p "$BUILD/binutils"
@@ -89,11 +95,11 @@ build_compiler() {
     gcc_cv_have_decl_strsignal=yes \
     gcc_cv_have_decl_getrlimit=yes \
     gcc_cv_have_decl_setrlimit=yes \
-    MAKEINFO="$(brew --prefix texinfo)/bin/makeinfo" \
+    MAKEINFO="$makeinfo" \
       "$SOURCES/Retro68/gcc/configure" \
         --target=m68k-none-elf --prefix="$PREFIX" \
         --enable-languages=c --with-arch=m68k --with-cpu=m68000 \
-        --with-gmp="$gmp" --with-mpfr="$mpfr" --with-mpc="$mpc" \
+        "${configure_math[@]}" \
         --without-headers --with-newlib \
         --disable-libssp --disable-multilib --disable-nls --disable-lto
     make -j"$JOBS" || make
@@ -114,6 +120,67 @@ build_pilrc() {
     mkdir -p "$PREFIX/share/pilrc"
     cp "$SOURCES/pilrc-3.2/ppmquant/"palette-* "$PREFIX/share/pilrc/"
   )
+}
+
+build_arm_compiler() {
+  local arm_fingerprint arm_stamp
+  arm_fingerprint="$({
+    printf '%s\n' "$RETRO68_COMMIT" "$BINUTILS_SHA256" "$RETRO68_GCC_VERSION"
+  } | sha256_stdin)"
+  arm_stamp="$PREFIX/.palm-toolchain-arm-compiler.sha256"
+  if [[ -x "$PREFIX/bin/arm-none-eabi-gcc" && \
+        -x "$PREFIX/bin/arm-none-eabi-g++" && \
+        -x "$PREFIX/bin/arm-none-eabi-ld" ]] && \
+     [[ "$("$PREFIX/bin/arm-none-eabi-gcc" -dumpfullversion)" == "$RETRO68_GCC_VERSION" ]] && \
+     [[ "$("$PREFIX/bin/arm-none-eabi-ld" --version | head -1)" == *"2.46.1"* ]] && \
+     [[ -f "$arm_stamp" && "$(cat "$arm_stamp")" == "$arm_fingerprint" ]]; then
+    return
+  fi
+
+  local configure_math=()
+  local makeinfo=makeinfo
+  if [[ "$HOST_OS" == Darwin ]]; then
+    configure_math=(
+      "--with-gmp=$(brew --prefix gmp)"
+      "--with-mpfr=$(brew --prefix mpfr)"
+      "--with-mpc=$(brew --prefix libmpc)"
+    )
+    makeinfo="$(brew --prefix texinfo)/bin/makeinfo"
+  fi
+
+  rm -rf "$BUILD/binutils-arm"
+  mkdir -p "$BUILD/binutils-arm"
+  (
+    cd "$BUILD/binutils-arm"
+    "$SOURCES/binutils-2.46.1/configure" \
+      --target=arm-none-eabi --prefix="$PREFIX" --disable-doc \
+      --disable-nls --disable-werror
+    make -j"$JOBS"
+    make install
+  )
+
+  rm -rf "$BUILD/gcc-arm"
+  mkdir -p "$BUILD/gcc-arm"
+  (
+    cd "$BUILD/gcc-arm"
+    ac_cv_header_unistd_h=yes \
+    ac_cv_type_caddr_t=yes \
+    gcc_cv_have_decl_strsignal=yes \
+    gcc_cv_have_decl_getrlimit=yes \
+    gcc_cv_have_decl_setrlimit=yes \
+    MAKEINFO="$makeinfo" \
+      "$SOURCES/Retro68/gcc/configure" \
+        --target=arm-none-eabi --prefix="$PREFIX" \
+        --enable-languages=c,c++ \
+        "${configure_math[@]}" \
+        --without-headers --with-newlib \
+        --disable-libssp --disable-multilib --disable-nls --disable-lto \
+        --disable-libstdcxx
+    make -j"$JOBS" all-gcc all-target-libgcc || \
+      make all-gcc all-target-libgcc
+    make install-gcc install-target-libgcc
+  )
+  printf '%s\n' "$arm_fingerprint" >"$arm_stamp"
 }
 
 build_prc_tools() {
@@ -138,10 +205,17 @@ build_gdb() {
   mkdir -p "$BUILD/gdb"
   (
     cd "$BUILD/gdb"
+    local configure_math=()
+    if [[ "$HOST_OS" == Darwin ]]; then
+      configure_math=(
+        "--with-gmp=$(brew --prefix gmp)"
+        "--with-mpfr=$(brew --prefix mpfr)"
+      )
+    fi
     "$SOURCES/gdb-17.2/configure" \
       --target=m68k-none-elf --program-prefix=m68k-none-elf- \
       --prefix="$PREFIX" --disable-binutils --disable-nls \
-      --with-gmp="$(brew --prefix gmp)" --with-mpfr="$(brew --prefix mpfr)" \
+      "${configure_math[@]}" \
       --with-python=no
     make -j"$JOBS" all-gdb
     make install-gdb
@@ -151,6 +225,7 @@ build_gdb() {
 case "${1:-all}" in
   prepare) prepare_sources ;;
   compiler) prepare_sources; build_compiler; build_pilrc; build_prc_tools ;;
+  arm) prepare_sources; build_arm_compiler ;;
   debugger) prepare_sources; build_gdb ;;
   all)
     if [[ -z "${PALM_SDK_SOURCE:-}" ]]; then
@@ -160,11 +235,12 @@ case "${1:-all}" in
     prepare_sources
     "$TOOLCHAIN_ROOT/scripts/install-sdk.sh" "$PALM_SDK_SOURCE"
     build_compiler
+    build_arm_compiler
     build_pilrc
     build_prc_tools
     build_gdb
     ;;
-  *) echo "usage: $0 [prepare|compiler|debugger|all]" >&2; exit 2 ;;
+  *) echo "usage: $0 [prepare|compiler|arm|debugger|all]" >&2; exit 2 ;;
 esac
 
 echo "Palm toolchain installed in $PREFIX"

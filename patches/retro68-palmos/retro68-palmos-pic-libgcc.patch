@@ -1,15 +1,21 @@
-diff --git a/gcc/libgcc/Makefile.in b/gcc/libgcc/Makefile.in
---- a/gcc/libgcc/Makefile.in
-+++ b/gcc/libgcc/Makefile.in
-@@ -247,7 +247,7 @@ LIBGCC2_CFLAGS = -O2 $(LIBGCC2_INCLUDES) $(GCC_CFLAGS) $(HOST_LIBGCC2_CFLAGS) \
- 		 $(LIBGCC2_DEBUG_CFLAGS) -DIN_LIBGCC2 \
- 		 -fbuilding-libgcc -fno-stack-protector \
- 		 -ffunction-sections \
--		 $(INHIBIT_LIBC_CFLAGS)
-+		 $(INHIBIT_LIBC_CFLAGS) -mpcrel -fpic -O1
- 
- # Additional options to use when compiling libgcc2.a.
- # Some targets override this to -isystem include
+diff --git a/gcc/libgcc/config.host b/gcc/libgcc/config.host
+--- a/gcc/libgcc/config.host
++++ b/gcc/libgcc/config.host
+@@ -1019,7 +1019,7 @@ m32rle-*-elf*)
+ 	tmake_file=t-fdpbit
+ 	;;
+ m68k-*-elf* | fido-*-elf)
+-	tmake_file="$tmake_file m68k/t-floatlib"
++	tmake_file="$tmake_file m68k/t-floatlib m68k/t-palmos-pic"
+ 	;;
+ m68k-*-macos)
+ 	extra_parts="crtbegin.o crtend.o"
+diff --git a/gcc/libgcc/config/m68k/t-palmos-pic b/gcc/libgcc/config/m68k/t-palmos-pic
+new file mode 100644
+--- /dev/null
++++ b/gcc/libgcc/config/m68k/t-palmos-pic
+@@ -0,0 +1 @@
++LIBGCC2_CFLAGS += -mpcrel -fpic -O1
 diff --git a/gcc/libgcc/config/m68k/lb1sf68.S b/gcc/libgcc/config/m68k/lb1sf68.S
 --- a/gcc/libgcc/config/m68k/lb1sf68.S
 +++ b/gcc/libgcc/config/m68k/lb1sf68.S
