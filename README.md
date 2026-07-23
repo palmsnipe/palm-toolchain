@@ -5,7 +5,7 @@ software.
 
 ## Included
 
-- Palm-compatible `m68k-none-elf` GCC 9.1
+- Palm-compatible `m68k-none-elf` GCC 16.1 from the latest pinned Retro68
 - GNU binutils 2.46.1
 - PilRC
 - the PRC packaging and object-resource utilities from prc-tools-remix
@@ -149,13 +149,30 @@ make install-sdk PALM_SDK_SOURCE=/path/to/sdk-5r4
 
 Every network input is pinned by commit or SHA-256 in `config/sources.lock`.
 
-## Development status
+## Compiler and host portability
 
-The compiler is pinned to the latest Retro68 revision that passes the PalmTLS
-runtime tests. Retro68's GCC 12, 15, and 16 branches currently regress the
-Palm `-mshort` runtime, so GCC 9.1 remains the newest verified choice. The
-repository patches its pointer-return ABI, FourCC handling, position-independent
-runtime helpers, and Newlib `memset` stack layout.
+The 68K compiler is GCC 16.1 from a pinned Retro68 revision. Retro68 provides
+the modern compiler source, while this repository applies the Palm-specific
+ABI and runtime adaptations that were historically embedded in older custom
+toolchain archives: pointer returns in A0, 32-bit FourCC constants with
+`-mshort`, position-independent runtime helpers, and the 16-bit-int Newlib
+`memset` stack layout. GCC 16's m68k backend currently fails internally when
+some libgcc helpers combine `-O2` with position-independent code, so libgcc is
+built at `-O1`; application code remains optimized at the level selected by
+each project. This exact source-and-patch combination passes `make check`, the
+complete PalmTLS build suite, and an ARM-device HTTPS runtime test.
+
+Native ARMlets are a separate compilation target; they do not use the 68K GCC.
+Projects should make their ARM compiler configurable and default to `clang`
+with an explicit target such as `--target=armv5te-none-eabi`. This selects
+Apple Clang from the Xcode Command Line Tools on macOS and upstream LLVM Clang
+on Linux without baking a platform-specific compiler path into the project.
+
+The bootstrap is currently supported on macOS because its host dependencies
+are installed and located through Homebrew. Linux support should retain the
+same pinned target sources and Palm patches while replacing only the host
+dependency discovery. The generated Palm code should not depend on the host
+system compiler used to build GCC itself.
 
 Users do not need to install or manage Retro68 separately. Palm C projects
 should still select a language version explicitly, such as `-std=gnu17`, to

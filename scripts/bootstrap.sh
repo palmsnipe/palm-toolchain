@@ -34,9 +34,6 @@ prepare_sources() {
   apply_git_patch_once "$SOURCES/Retro68" \
     "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-palmos-pic-libgcc.patch" \
     "$SOURCES/Retro68/.palmsnipe-palmos-pic-libgcc"
-  apply_git_patch_once "$SOURCES/Retro68" \
-    "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-modern-darwin.patch" \
-    "$SOURCES/Retro68/.palmsnipe-modern-darwin"
   apply_archive_patch_once "$SOURCES/pilrc-3.2" \
     "$TOOLCHAIN_ROOT/patches/pilrc/pilrc-64-bit-resource-directory.patch" \
     "$SOURCES/pilrc-3.2/.palmsnipe-resource-directory-64bit"
@@ -58,7 +55,6 @@ build_compiler() {
     sha256_file "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-palmos-fourcc.patch"
     sha256_file "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-palmos-mshort-memset.patch"
     sha256_file "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-palmos-pic-libgcc.patch"
-    sha256_file "$TOOLCHAIN_ROOT/patches/retro68-palmos/retro68-modern-darwin.patch"
   } | shasum -a 256 | awk '{print $1}')"
   compiler_stamp="$PREFIX/.palm-toolchain-compiler.sha256"
   if [[ -x "$PREFIX/bin/m68k-none-elf-gcc" && \

@@ -6,7 +6,7 @@ third-party source archives or generated binaries. Exact inputs are recorded in
 
 | Input | Source | Treatment |
 | --- | --- | --- |
-| Retro68 / GCC 9.1 | `autc04/Retro68` | Cloned at an exact tested commit and patched locally |
+| Retro68 / GCC 16.1 | `autc04/Retro68` | Cloned at an exact tested commit and patched locally |
 | GNU binutils 2.46.1 | Sourceware release | Downloaded by checksum |
 | PilRC 3.2 | SourceForge release | Downloaded by checksum and patched locally |
 | prc-tools-remix | `jichu4n/prc-tools-remix` | Cloned at an exact commit and patched locally |

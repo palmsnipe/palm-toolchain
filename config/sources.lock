@@ -2,10 +2,10 @@
 # Immutable external inputs. Archives are verified before extraction and Git
 # repositories are checked out detached at the exact commit listed here.
 
-# Latest Retro68 revision verified with the PalmTLS runtime.
+# Latest Retro68 revision, carrying GCC 16.1.
 RETRO68_REPOSITORY="https://github.com/autc04/Retro68.git"
-RETRO68_COMMIT="6671b826246b6046b86fbcd4efea3d9f716e2b86"
-RETRO68_GCC_VERSION="9.1.0"
+RETRO68_COMMIT="f99ecb5aeb6fbb004c647518ea760daba2b1f6bb"
+RETRO68_GCC_VERSION="16.1.0"
 
 BINUTILS_URL="https://sourceware.org/pub/binutils/releases/binutils-2.46.1.tar.xz"
 BINUTILS_FILE="binutils-2.46.1.tar.xz"
