@@ -136,6 +136,26 @@ docker run --rm \
 The container is intended for Linux validation and future CI work; local
 macOS and Linux users can use `make setup` directly.
 
+### CI container images
+
+The public `ghcr.io/palmsnipe/palm-toolchain` image contains the complete
+SDK-free toolchain. Its GitHub workflow publishes `latest` and an immutable
+source-commit tag when run manually or for a version tag.
+
+For trusted personal CI, a separate private image can add a user-supplied SDK
+without copying it into this repository:
+
+```sh
+PALM_TOOLCHAIN_IMAGE=ghcr.io/palmsnipe/palm-toolchain:latest \
+  scripts/build-sdk-image.sh \
+  /path/to/sdk-5r4 \
+  ghcr.io/palmsnipe/palm-toolchain-sdk:5r4-gcc16
+```
+
+`Dockerfile.sdk` uses the SDK directory only as its external Docker build
+context. The resulting image must remain private and must not be exposed to
+workflows that execute untrusted pull-request code.
+
 ## Technical details
 
 See [TECHNICAL.md](TECHNICAL.md) for source pinning, Palm-specific GCC

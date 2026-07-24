@@ -30,7 +30,12 @@ RUN apt-get update \
 FROM base AS builder
 
 WORKDIR /opt/palm-toolchain
-COPY . .
+COPY Makefile ./
+COPY config ./config
+COPY patches ./patches
+COPY scripts ./scripts
+COPY tests ./tests
+COPY tools ./tools
 RUN make bootstrap-core \
     && make check-core check-arm
 
@@ -45,5 +50,9 @@ ENV PALM_TOOLCHAIN_PREFIX=/opt/palm-toolchain/.toolchain/prefix
 ENV PATH="${PALM_TOOLCHAIN_PREFIX}/bin:${PATH}"
 
 RUN make check-core check-arm
+
+LABEL org.opencontainers.image.source="https://github.com/palmsnipe/palm-toolchain" \
+      org.opencontainers.image.description="Palm OS cross-development toolchain (SDK not included)" \
+      org.opencontainers.image.licenses="MIT"
 
 CMD ["bash"]

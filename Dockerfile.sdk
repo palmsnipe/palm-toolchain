@@ -1,0 +1,18 @@
+ARG TOOLCHAIN_IMAGE=ghcr.io/palmsnipe/palm-toolchain:latest
+
+FROM ${TOOLCHAIN_IMAGE} AS sdk-installer
+
+COPY . /tmp/palm-sdk
+RUN make install-sdk PALM_SDK_SOURCE=/tmp/palm-sdk \
+    && make check \
+    && rm -rf /tmp/palm-sdk
+
+FROM ${TOOLCHAIN_IMAGE}
+
+COPY --from=sdk-installer \
+    /opt/palm-toolchain/.toolchain/prefix/palmdev/sdk \
+    /opt/palm-toolchain/.toolchain/prefix/palmdev/sdk
+
+RUN make check
+
+LABEL org.opencontainers.image.description="Private Palm OS toolchain image with a user-supplied SDK 5r4"
